@@ -10,6 +10,7 @@ import { ProductCategory } from '../common/product-category';
 @Injectable({
   providedIn: 'root'
 })
+
 export class ProductService {
   
   private baseUrl = 'http://localhost:8080/api/products'
@@ -25,11 +26,25 @@ export class ProductService {
     return this.getProducts(searchUrl);
   }
 
+
+  getProductListPaginate( page: number, 
+                          size: number, 
+                          theCategoryId: number
+                          ): Observable<GetResponseProducts> {
+    //Build base URL on category Id
+    const searchUrl = `${this.baseUrl}/search/findByCategoryId?id=${theCategoryId}`
+                        +`&page=${page}&size=${size}`;
+                        return this.httpClient.get<GetResponseProducts>(searchUrl);
+      
+  }
+
   getProductList(theCategoryId: number): Observable<Product[]> {
     //Build base URL on category Id
     const searchUrl = `${this.baseUrl}/search/findByCategoryId?id=${theCategoryId}`;
       return this.getProducts(searchUrl);
   }
+
+
 
   private getProducts(searchUrl: string): Observable<Product[]> {
     return this.httpClient.get<GetResponseProducts>(searchUrl).pipe(
@@ -52,6 +67,12 @@ export class ProductService {
 interface GetResponseProducts{
   _embedded: {
     products: Product[]
+  },
+  page: {
+    size: number,
+    totalElements: number,
+    totalPages: number,
+    number: number
   }
 }
 
