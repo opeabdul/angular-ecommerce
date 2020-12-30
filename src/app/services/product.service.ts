@@ -5,7 +5,6 @@ import { Product } from '../common/product';
 import { map } from 'rxjs/operators'
 import { ProductCategory } from '../common/product-category';
 
- 
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +24,6 @@ export class ProductService {
     const searchUrl = `${this.baseUrl}/search/findByNameContaining?name=${theKeyword}`;
     return this.getProducts(searchUrl);
   }
-
 
   getProductListPaginate( page: number, 
                           size: number, 

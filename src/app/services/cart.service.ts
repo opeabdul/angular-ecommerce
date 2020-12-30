@@ -6,6 +6,7 @@ import { CartItem } from '../common/cart-item';
   providedIn: 'root'
 })
 export class CartService {
+  
 
   cartItems: CartItem[] = [];
 
@@ -62,7 +63,32 @@ export class CartService {
       console.log(`name: ${tempCartItem.name}, quantity: ${tempCartItem.quantity}, unitPrice: ${tempCartItem.unitPrice}, subTotalPrice: ${subTotalPrice}`);
     }
 
-    console.log(`totalPrice: ${totalPriceValue.toFixed(2)}, totalQuantityValue: ${totalQuantityValue}`);
+    console.log(`totalPrice: ${totalPriceValue.toFixed(2)}, totalQuantity: ${totalQuantityValue}`);
     console.log('----');
   }
+
+  decrementQuantity(cartItem: CartItem) {
+    
+    cartItem.quantity--;
+
+    if(cartItem.quantity == 0){
+      this.remove(cartItem);
+    }else{
+      this.computeCartTotals();
+    }
+  }
+
+  remove(cartItem: CartItem) {
+    
+    const itemIndex = this.cartItems.findIndex(tempCartItem => tempCartItem.id == cartItem.id);
+
+    if(itemIndex > -1){
+      this.cartItems.splice(itemIndex, 1);
+
+      this.computeCartTotals();
+    }
+
+    
+  }
+
 }
