@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Country } from 'src/app/common/country';
 import { State } from 'src/app/common/state';
 import { EcommerceFormService } from 'src/app/services/ecommerce-form.service';
+import { EcommerceFormValidators } from 'src/app/validators/ecommerce-form-validators';
 
 @Component({
   selector: 'app-checkout',
@@ -29,9 +30,9 @@ export class CheckoutComponent implements OnInit {
   ngOnInit(): void {
     this.checkoutFormGroup = this.formBuilder.group({
       customer: this.formBuilder.group({
-        firstName: [''],
-        lastName: [''],
-        email: ['']
+        firstName: new FormControl('', [Validators.required, Validators.minLength(2), EcommerceFormValidators.notOnlyWhiteSpace]),
+        lastName: new FormControl('', [Validators.required, Validators.minLength(2), EcommerceFormValidators.notOnlyWhiteSpace]),
+        email: new FormControl('', [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')])
       }),
       shippingAddress: this.formBuilder.group({
         city: [''],
@@ -108,6 +109,11 @@ export class CheckoutComponent implements OnInit {
 
 
   onSubmit(){
+
+    if(this.checkoutFormGroup.invalid){
+      this.checkoutFormGroup.markAllAsTouched();
+    }
+
     console.log('Handling form submit');
     console.log(this.checkoutFormGroup.get('customer').value);
     console.log(`The email address is: ${this.checkoutFormGroup.get('customer').value.email}`);
@@ -115,6 +121,11 @@ export class CheckoutComponent implements OnInit {
     console.log(`The shipping address country is ${this.checkoutFormGroup.get('shippingAddress').value.country.name}`);
     console.log(`The shipping address state is ${this.checkoutFormGroup.get('shippingAddress').value.state.name}`);
   }
+
+
+  get firstName(){ return this.checkoutFormGroup.get('customer.firstName'); }
+  get lastName(){ return this.checkoutFormGroup.get('customer.lastName'); }
+  get email(){ return this.checkoutFormGroup.get('customer.email'); }
 
   copyShippingAddressToBillingAddress(event){
 
@@ -127,7 +138,8 @@ export class CheckoutComponent implements OnInit {
     }else{
       this.checkoutFormGroup.controls.billingAddress.reset();
 
-      this.billingAddressStates = [];
+      this.billingAddressStates = []
+      ;
     }
   }
 
